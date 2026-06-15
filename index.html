@@ -72,6 +72,494 @@ small.hint{color:#64748b;font-size:10px;}
 #ava-sheet .sec{background:#1e3a8a;color:#fff;font-weight:700;padding:3px 6px;margin-top:6px;font-size:11px;}
 #ava-sheet .ava-canvas-wrap{border:1px solid #1e3a8a;margin-top:4px;}
 #ava-sheet .nb{border:none;}
+
+/* ================= MODERN UI PATCH — applied by ChatGPT =================
+   จุดประสงค์: ทำหน้าใช้งานให้ดู modern medical dashboard มากขึ้น
+   โดยไม่เปลี่ยน logic เดิมและไม่กระทบ AVA export sheet
+============================================================================ */
+
+:root{
+  --primary:#2563eb;
+  --primary-dark:#1d4ed8;
+  --secondary:#38bdf8;
+  --accent:#f59e0b;
+  --danger:#dc2626;
+  --success:#16a34a;
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --line:#e2e8f0;
+  --head:#0f172a;
+  --muted:#64748b;
+  --ink:#0f172a;
+  --soft:#f1f5f9;
+  --shadow:0 12px 30px rgba(15,23,42,.08);
+  --shadow-soft:0 1px 3px rgba(15,23,42,.08);
+}
+
+body{
+  background:
+    radial-gradient(circle at top left, rgba(37,99,235,.12), transparent 34rem),
+    linear-gradient(180deg,#f8fafc 0%,#eef2f7 100%);
+  color:var(--ink);
+  padding:18px;
+  font-size:13px;
+  line-height:1.45;
+}
+
+.container{
+  max-width:1480px;
+  background:transparent;
+  box-shadow:none;
+  padding:0;
+}
+
+header{
+  background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 55%,#2563eb 100%);
+  color:#fff;
+  text-align:left;
+  border:0;
+  border-radius:22px;
+  padding:22px 24px;
+  margin-bottom:14px;
+  box-shadow:var(--shadow);
+  position:relative;
+  overflow:hidden;
+}
+
+header::after{
+  content:"";
+  position:absolute;
+  right:-80px;
+  top:-80px;
+  width:260px;
+  height:260px;
+  border-radius:999px;
+  background:rgba(255,255,255,.10);
+}
+
+h1{
+  color:#fff;
+  font-size:24px;
+  letter-spacing:.02em;
+  line-height:1.15;
+}
+
+.sub{
+  color:rgba(255,255,255,.76);
+  margin-top:4px;
+}
+
+/* Sticky case summary */
+.modern-casebar{
+  position:sticky;
+  top:10px;
+  z-index:50;
+  display:grid;
+  grid-template-columns:repeat(6,minmax(110px,1fr));
+  gap:8px;
+  align-items:center;
+  background:rgba(255,255,255,.94);
+  backdrop-filter:blur(14px);
+  border:1px solid rgba(226,232,240,.85);
+  box-shadow:0 12px 34px rgba(15,23,42,.12);
+  border-radius:18px;
+  padding:10px;
+  margin:0 0 14px;
+}
+
+.modern-casebar .case-item{
+  background:var(--soft);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:8px 10px;
+  min-height:48px;
+}
+
+.modern-casebar .case-label{
+  display:block;
+  font-size:10px;
+  font-weight:700;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+
+.modern-casebar .case-value{
+  display:block;
+  font-size:13px;
+  font-weight:800;
+  color:var(--ink);
+  margin-top:2px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+
+
+/* Editable inputs in the sticky case summary */
+.modern-casebar .case-input{
+  width:100%;
+  min-height:24px;
+  display:block;
+  margin-top:2px;
+  padding:2px 0;
+  border:1px solid transparent;
+  border-radius:8px;
+  background:transparent;
+  box-shadow:none;
+  color:var(--ink);
+  font-size:13px;
+  font-weight:800;
+  line-height:1.2;
+}
+
+.modern-casebar .case-input::placeholder{
+  color:#94a3b8;
+}
+
+.modern-casebar .case-input:focus{
+  background:#fff;
+  border-color:rgba(37,99,235,.55);
+  box-shadow:0 0 0 3px rgba(37,99,235,.10);
+  padding:2px 8px;
+}
+
+.modern-casebar select.case-input{
+  cursor:pointer;
+  appearance:auto;
+}
+
+.modern-casebar .live .case-value{
+  display:flex;
+  align-items:center;
+  min-height:24px;
+}
+
+.modern-casebar .live{
+  background:#ecfdf5;
+  border-color:#bbf7d0;
+}
+
+.modern-casebar .live .case-value{
+  color:#047857;
+}
+
+.modern-dot{
+  display:inline-block;
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background:#ef4444;
+  margin-right:6px;
+  animation:pulse 1.3s infinite;
+}
+
+/* Section cards */
+.bar{
+  margin:18px 0 0;
+  padding:12px 14px;
+  border-radius:16px 16px 0 0;
+  background:#fff;
+  color:var(--head);
+  border:1px solid var(--line);
+  border-bottom:0;
+  box-shadow:var(--shadow-soft);
+  font-size:12px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+
+.bar + .grid,
+.bar + .chk,
+.bar + table.dt,
+.bar + .chart-wrap,
+.bar + .events{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:0 0 16px 16px;
+  padding:14px;
+  box-shadow:var(--shadow-soft);
+}
+
+.grid{gap:12px}
+.g4{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.owner-patient-grid{grid-template-columns:repeat(5,minmax(0,1fr));}
+.owner-patient-grid > div{min-width:0;}
+
+label{
+  font-size:11px;
+  font-weight:800;
+  color:#475569;
+  letter-spacing:.01em;
+}
+
+input,select,textarea{
+  min-height:36px;
+  border:1px solid #dbe3ef;
+  background:#fff;
+  border-radius:10px;
+  padding:8px 10px;
+  transition:border-color .15s, box-shadow .15s, background .15s;
+}
+
+textarea{min-height:72px}
+
+input:focus,select:focus,textarea:focus{
+  outline:none;
+  border-color:rgba(37,99,235,.65);
+  box-shadow:0 0 0 4px rgba(37,99,235,.10);
+}
+
+/* Settings box: keep available but visually less dominant */
+.config-box{
+  background:#fff7ed;
+  border:1px solid #fed7aa;
+  border-radius:16px;
+  box-shadow:var(--shadow-soft);
+}
+
+.config-box label{
+  color:#9a3412;
+  font-weight:800;
+}
+
+/* Equipment checklist */
+.chk{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:10px;
+}
+
+.chk label{
+  min-height:46px;
+  justify-content:flex-start;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:10px 12px;
+  color:#334155;
+  box-shadow:var(--shadow-soft);
+}
+
+.chk label:has(input:checked){
+  background:#ecfdf5;
+  border-color:#86efac;
+  color:#166534;
+}
+
+.chk input{
+  width:16px;
+  height:16px;
+  accent-color:var(--success);
+}
+
+#modern-eq-progress{
+  float:right;
+  color:#166534;
+  background:#dcfce7;
+  padding:3px 8px;
+  border-radius:999px;
+  font-size:11px;
+  letter-spacing:0;
+  text-transform:none;
+}
+
+/* ASA segmented control */
+.asa{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:8px;
+  box-shadow:var(--shadow-soft);
+}
+
+.asa button{
+  min-height:42px;
+  border-radius:12px;
+  font-size:13px;
+}
+
+.asa button.on{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;
+  box-shadow:0 8px 18px rgba(37,99,235,.22);
+}
+
+#asa-e.on{
+  background:linear-gradient(135deg,#f97316,#dc2626);
+}
+
+/* Tables */
+table.dt{
+  background:#fff;
+  border-collapse:separate;
+  border-spacing:0;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:var(--shadow-soft);
+  border:1px solid var(--line);
+}
+
+table.dt th{
+  background:#f1f5f9;
+  color:#334155;
+  font-size:11px;
+  padding:9px 8px;
+  text-transform:uppercase;
+  letter-spacing:.03em;
+}
+
+table.dt td{
+  border-color:#eef2f7;
+  padding:6px;
+}
+
+table.dt tr:nth-child(even) td{
+  background:#fbfdff;
+}
+
+table.dt input,table.dt select{
+  min-height:32px;
+  border:1px solid transparent;
+  background:transparent;
+}
+
+table.dt input:focus,table.dt select:focus{
+  background:#fff;
+  border-color:rgba(37,99,235,.45);
+}
+
+/* Buttons */
+.btn{
+  border-radius:12px;
+  font-weight:800;
+  box-shadow:var(--shadow-soft);
+}
+
+.btn:hover{
+  transform:translateY(-1px);
+  filter:brightness(.98);
+}
+
+.btn-primary{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+}
+
+.btn-success{
+  background:linear-gradient(135deg,#16a34a,#059669);
+  min-height:48px;
+  border-radius:14px;
+}
+
+/* Timer cards */
+.timer-box{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:var(--shadow-soft);
+}
+
+.timer-badge{
+  color:#1d4ed8;
+}
+
+/* AI + vital input as main working card */
+.ai-container{
+  background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);
+  color:var(--ink);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:18px;
+  box-shadow:var(--shadow);
+  text-align:left;
+}
+
+.ai-container h3{
+  color:var(--ink);
+  font-size:18px;
+}
+
+.ai-container video,
+.ai-container img{
+  border:1px solid var(--line);
+  box-shadow:var(--shadow-soft);
+}
+
+.ai-container .vitals-grid label,
+.vitals-grid label{
+  color:#475569;
+}
+
+.vitals-grid{
+  grid-template-columns:repeat(auto-fit,minmax(94px,1fr));
+  gap:10px;
+}
+
+.vitals-grid > div{
+  background:#f8fafc;
+  border:1px solid #e2e8f0;
+  border-radius:14px;
+  padding:8px;
+}
+
+.vitals-grid input{
+  background:#fff;
+  color:#0f172a;
+  font-size:16px;
+}
+
+/* Graph/data area */
+.legend{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:10px 12px;
+  color:#334155;
+}
+
+.legend span{
+  background:#f8fafc;
+  border:1px solid #e2e8f0;
+  border-radius:999px;
+  padding:5px 9px;
+  font-weight:800;
+}
+
+.chart-wrap{
+  border-radius:18px;
+  padding:12px;
+  box-shadow:var(--shadow-soft);
+}
+
+#chart{
+  width:100%;
+  height:auto;
+}
+
+/* Alerts */
+.alert-active{
+  border-radius:16px;
+  box-shadow:0 12px 28px rgba(220,38,38,.22);
+}
+
+/* Mobile */
+@media (max-width:900px){
+  body{padding:10px}
+  header{border-radius:16px;padding:18px}
+  h1{font-size:20px}
+  .modern-casebar{grid-template-columns:repeat(2,1fr);top:6px;border-radius:14px}
+  .g2,.g3,.g4,.owner-patient-grid{grid-template-columns:1fr}
+}
+
+@media print{
+  .modern-casebar{display:none!important}
+  body{background:#fff;padding:0}
+  header{box-shadow:none}
+}
+
 </style>
 </head>
 <body>
@@ -92,16 +580,15 @@ small.hint{color:#64748b;font-size:10px;}
 
 <!-- OWNER / PATIENT -->
 <div class="bar">🐾 OWNER & PATIENT</div>
-<div class="grid g4">
-<div><label>Patient name</label><input id="p-name"></div>
+<div class="grid owner-patient-grid">
 <div><label>Patient ID / HN</label><input id="hn"></div>
-<div><label>Owner name</label><input id="owner"></div>
+<div><label>Patient name</label><input id="p-name"></div>
 <div><label>Weight (kg)</label><input type="number" id="weight" step="0.01" oninput="calcBlood()"></div>
+<div><label>BCS (/9)</label><input type="number" id="bcs" min="1" max="9"></div>
+<div><label>Date of birth</label><input type="date" id="dob"></div>
 <div><label>Species</label><input id="species"></div>
 <div><label>Breed</label><input id="breed"></div>
-<div><label>Date of birth</label><input type="date" id="dob"></div>
 <div><label>Sex</label><select id="sex"><option value=""></option><option>M</option><option>MN</option><option>F</option><option>FS</option></select></div>
-<div><label>BCS (/9)</label><input type="number" id="bcs" min="1" max="9"></div>
 <div><label>Consent signed</label><select id="consent"><option value=""></option><option>Y</option><option>N</option></select></div>
 <div><label>Date</label><input type="date" id="rec-date"></div>
 </div>
@@ -832,6 +1319,178 @@ function exportImage(){
     link.href=c.toDataURL();link.click();
   }).finally(()=>{sheet.classList.remove('show');});
 }
+
+/* ================= MODERN UI PATCH JS — applied by ChatGPT =================
+   เพิ่ม sticky patient summary + equipment progress โดยไม่เปลี่ยน logic เดิม
+============================================================================ */
+
+(function modernUIPatch(){
+  const $ = (id) => document.getElementById(id);
+  const val = (id, fallback='—') => {
+    const el = $(id);
+    const v = el && 'value' in el ? String(el.value || '').trim() : '';
+    return v || fallback;
+  };
+
+  function installCasebar(){
+    if (document.querySelector('.modern-casebar')) return;
+    const header = document.querySelector('header');
+    if (!header) return;
+
+    const bar = document.createElement('div');
+    bar.className = 'modern-casebar no-print';
+    bar.innerHTML = `
+      <div class="case-item"><span class="case-label">Patient</span><input class="case-input" id="m-patient" data-target="p-name" placeholder="ใส่ชื่อผู้ป่วย"></div>
+      <div class="case-item"><span class="case-label">Weight (kg)</span><input class="case-input" id="m-weight" data-target="weight" type="number" step="0.01" placeholder="น้ำหนัก"></div>
+      <div class="case-item"><span class="case-label">Species</span><input class="case-input" id="m-species" data-target="species" placeholder="Dog / Cat"></div>
+      <div class="case-item"><span class="case-label">Procedure</span><input class="case-input" id="m-procedure" data-target="procedure" placeholder="หัตถการ"></div>
+      <div class="case-item"><span class="case-label">ASA</span><select class="case-input" id="m-asa-input">
+        <option value="">เลือก ASA</option><option>I</option><option>II</option><option>III</option><option>IV</option><option>V</option>
+        <option>I E</option><option>II E</option><option>III E</option><option>IV E</option><option>V E</option>
+      </select></div>
+      <div class="case-item live"><span class="case-label">Case status</span><span class="case-value"><span class="modern-dot"></span><span id="m-clock">Live 00:00</span></span></div>
+    `;
+    header.after(bar);
+
+    // ให้ช่องบนสุดแก้ไขได้จริง และ sync กลับไปยังฟอร์มเดิมด้านล่าง
+    bar.querySelectorAll('[data-target]').forEach(input => {
+      input.addEventListener('input', () => {
+        const target = $(input.dataset.target);
+        if (!target) return;
+        target.value = input.value;
+        target.dispatchEvent(new Event('input', { bubbles:true }));
+        target.dispatchEvent(new Event('change', { bubbles:true }));
+      });
+    });
+
+    const asaTop = $('m-asa-input');
+    if (asaTop) {
+      asaTop.addEventListener('change', () => setAsaFromCasebar(asaTop.value));
+    }
+  }
+
+  const startedAt = Date.now();
+
+  function syncTopInput(id, value){
+    const el = $(id);
+    if (!el || document.activeElement === el) return;
+    el.value = value === '—' ? '' : value;
+  }
+
+  function setAsaFromCasebar(raw){
+    const value = String(raw || '').trim();
+    const emergency = /\bE\b/.test(value);
+    const num = value.replace(/\bE\b/g, '').trim();
+
+    try {
+      document.querySelectorAll('#asa-row button:not(#asa-e)').forEach(b => b.classList.remove('on'));
+      asaNum = '';
+      if (num) {
+        const target = [...document.querySelectorAll('#asa-row button:not(#asa-e)')]
+          .find(b => b.textContent.trim() === num);
+        if (target) {
+          target.classList.add('on');
+          asaNum = num;
+        }
+      }
+      asaE = emergency;
+      const eBtn = $('asa-e');
+      if (eBtn) eBtn.classList.toggle('on', asaE);
+    } catch(e) {}
+
+    updateCasebar();
+  }
+
+  function updateCasebar(){
+    if (!$('m-patient')) return;
+
+    syncTopInput('m-patient', val('p-name'));
+    syncTopInput('m-weight', val('weight'));
+    syncTopInput('m-species', val('species'));
+    syncTopInput('m-procedure', val('procedure'));
+
+    let asaText = '';
+    try {
+      asaText = (typeof asaNum !== 'undefined' && asaNum ? asaNum : '') +
+        (typeof asaE !== 'undefined' && asaE ? ' E' : '');
+    } catch(e){}
+    syncTopInput('m-asa-input', asaText.trim());
+
+    const sec = Math.floor((Date.now() - startedAt) / 1000);
+    const mm = String(Math.floor(sec / 60)).padStart(2,'0');
+    const ss = String(sec % 60).padStart(2,'0');
+    $('m-clock').textContent = `Live ${mm}:${ss}`;
+  }
+
+  function installEquipmentProgress(){
+    const eqBar = [...document.querySelectorAll('.bar')]
+      .find(el => el.textContent.includes('EQUIPMENT READY'));
+    if (!eqBar || $('modern-eq-progress')) return;
+
+    const badge = document.createElement('span');
+    badge.id = 'modern-eq-progress';
+    badge.textContent = '0/8 ready';
+    eqBar.appendChild(badge);
+  }
+
+  function updateEquipmentProgress(){
+    const badge = $('modern-eq-progress');
+    if (!badge) return;
+
+    const ids = ['eq1','eq2','eq3','eq4','eq5','eq6','eq7','eq8'];
+    const checked = ids.filter(id => $(id)?.checked).length;
+    badge.textContent = `${checked}/8 ready`;
+  }
+
+  function improveSections(){
+    document.querySelectorAll('button').forEach(btn => {
+      const text = btn.textContent.trim();
+      if (text === '+ เพิ่มแถว') btn.textContent = '+ Add row';
+      if (text === '+ เพิ่มยา CRI') btn.textContent = '+ Add CRI drug';
+    });
+
+    const scanBtn = $('btn-scan');
+    if (scanBtn && !document.querySelector('#modern-ai-hint')) {
+      scanBtn.insertAdjacentHTML('afterend',
+        '<div id="modern-ai-hint" class="status-msg" style="color:#64748b;margin-top:8px">AI จะเติมค่าลงช่องด้านล่าง กรุณาตรวจสอบก่อนกดบันทึก</div>'
+      );
+    }
+  }
+
+  document.addEventListener('input', () => {
+    updateCasebar();
+    updateEquipmentProgress();
+  });
+
+  document.addEventListener('change', () => {
+    updateCasebar();
+    updateEquipmentProgress();
+  });
+
+  document.addEventListener('click', () => {
+    setTimeout(() => {
+      updateCasebar();
+      updateEquipmentProgress();
+    }, 0);
+  });
+
+  installCasebar();
+  installEquipmentProgress();
+  improveSections();
+  updateCasebar();
+  updateEquipmentProgress();
+  setInterval(updateCasebar, 1000);
+
+  try {
+    const originalAddRecord = addRecord;
+    window.addRecord = function(){
+      originalAddRecord.apply(this, arguments);
+      updateCasebar();
+      setTimeout(updateEquipmentProgress, 0);
+    };
+  } catch(e){}
+})();
+
 </script>
 </body>
 </html>
