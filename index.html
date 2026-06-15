@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AVA Anaesthesia Monitoring Sheet — Adapt by NoN</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{--primary:#1e3a8a;--secondary:#3b82f6;--accent:#f59e0b;--danger:#ef4444;--success:#10b981;--bg:#eef2f7;--card:#fff;--line:#cbd5e1;--head:#1e3a8a;}
+*{box-sizing:border-box;}
+body{font-family:'Inter','Sarabun',sans-serif;background:var(--bg);margin:0;padding:10px;color:#1e293b;font-size:13px;}
+.container{max-width:1100px;margin:auto;background:var(--card);padding:18px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.1);}
+header{text-align:center;border-bottom:2px solid var(--primary);margin-bottom:14px;padding-bottom:8px;}
+h1{color:var(--primary);margin:0;font-size:20px;letter-spacing:.5px;}
+.sub{color:#64748b;font-size:12px;}
+.bar{background:var(--head);color:#fff;padding:7px 10px;font-weight:700;margin:16px 0 8px;border-radius:7px;font-size:13px;}
+.grid{display:grid;gap:8px;}
+.g2{grid-template-columns:1fr 1fr;}
+.g3{grid-template-columns:1fr 1fr 1fr;}
+.g4{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));}
+label{font-size:11px;font-weight:600;color:#475569;display:block;margin-bottom:2px;}
+input,select,textarea{width:100%;padding:6px;border:1px solid var(--line);border-radius:5px;font-size:13px;font-family:inherit;}
+textarea{resize:vertical;min-height:38px;}
+.flex{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;}
+.chk{display:flex;flex-wrap:wrap;gap:6px;}
+.chk label{display:flex;align-items:center;gap:4px;background:#f1f5f9;padding:5px 8px;border-radius:6px;font-size:11px;cursor:pointer;border:1px solid #e2e8f0;margin:0;}
+.chk input{width:auto;}
+.asa{display:flex;gap:4px;}
+.asa button{flex:1;padding:7px 0;border:1px solid var(--line);background:#f8fafc;border-radius:6px;cursor:pointer;font-weight:700;}
+.asa button.on{background:var(--primary);color:#fff;border-color:var(--primary);}
+table.dt{width:100%;border-collapse:collapse;font-size:12px;}
+table.dt th,table.dt td{border:1px solid var(--line);padding:3px;}
+table.dt th{background:#e2e8f0;font-size:11px;}
+table.dt input,table.dt select{border:none;padding:4px;border-radius:0;}
+.timer-box{background:#f1f5f9;padding:10px;border-radius:10px;text-align:center;border:1px solid #e2e8f0;flex:1;}
+.timer-badge{font-family:monospace;font-size:22px;font-weight:bold;color:var(--primary);display:block;margin:4px 0;}
+.ai-container{background:#1e293b;color:#fff;padding:14px;border-radius:14px;margin-top:14px;text-align:center;}
+video{width:100%;max-width:380px;border-radius:10px;background:#000;margin-bottom:8px;}
+.vitals-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:7px;margin-top:12px;}
+.vitals-grid input{text-align:center;font-weight:bold;font-size:15px;background:#fff;color:#000;}
+.vitals-grid label{color:#fff;}
+.btn{padding:9px 16px;border-radius:7px;border:none;cursor:pointer;font-weight:700;transition:.15s;font-size:13px;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-success{background:var(--success);color:#fff;width:100%;font-size:16px;margin-top:12px;}
+.btn-warning{background:var(--accent);color:#fff;margin-top:8px;}
+.alert-active{background:var(--danger);color:#fff;padding:9px;border-radius:7px;margin-bottom:8px;animation:pulse 1.5s infinite;text-align:center;display:none;}
+@keyframes pulse{0%{opacity:1}50%{opacity:.65}100%{opacity:1}}
+.no-print{display:block;}
+.status-msg{font-size:12px;color:#fbbf24;margin-top:6px;min-height:15px;}
+.config-box{background:#fffbeb;border:1px solid var(--accent);padding:10px;border-radius:7px;margin-bottom:12px;}
+.config-box label{color:#92400e;}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:11px;margin:6px 0;color:#475569;}
+.legend span{display:flex;align-items:center;gap:4px;}
+.chart-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;padding:6px;background:#fff;}
+.events .flex{margin-bottom:6px;}
+.events input[type=text]{flex:2;}
+.events input[type=time]{flex:1;}
+small.hint{color:#64748b;font-size:10px;}
+
+/* ========== AVA EXPORT SHEET ========== */
+#ava-sheet{position:absolute;left:-99999px;top:0;width:1100px;background:#fff;color:#000;
+  font-family:'Inter','Sarabun',sans-serif;font-size:11px;padding:14px;}
+#ava-sheet.show{position:static;left:auto;}
+#ava-sheet .ava-title{text-align:center;font-size:20px;font-weight:700;color:#1e3a8a;letter-spacing:.5px;border-bottom:none;}
+#ava-sheet .ava-title small{font-size:12px;color:#1e3a8a;}
+#ava-sheet table{border-collapse:collapse;width:100%;}
+#ava-sheet td,#ava-sheet th{border:1px solid #1e3a8a;padding:2px 4px;vertical-align:top;font-size:10.5px;line-height:1.3;}
+#ava-sheet .hd{background:#1e3a8a;color:#fff;font-weight:700;}
+#ava-sheet .lbl{background:#dbeafe;font-weight:600;color:#1e3a8a;}
+#ava-sheet .val{min-width:40px;}
+#ava-sheet .sec{background:#1e3a8a;color:#fff;font-weight:700;padding:3px 6px;margin-top:6px;font-size:11px;}
+#ava-sheet .ava-canvas-wrap{border:1px solid #1e3a8a;margin-top:4px;}
+#ava-sheet .nb{border:none;}
+</style>
+</head>
+<body>
+<div class="container" id="capture-area">
+<header>
+<h1>ANAESTHESIA MONITORING SHEET</h1>
+<div class="sub">Adapt by NoN · AVA Style</div>
+</header>
+
+<div id="alert-cefazolin" class="alert-active">
+🚨 ครบ 90 นาที: ให้ยา Cefazolin ซ้ำ! <button onclick="resetCefazolin()" style="cursor:pointer">บันทึก/รีเซ็ต</button>
+</div>
+
+<div class="config-box no-print">
+<label>🔑 Gemini API Key (ขึ้นต้น AIza...) — กรอกครั้งเดียว จำในเครื่องนี้</label>
+<input type="password" id="api-key" placeholder="วาง API Key" oninput="saveKey()">
+</div>
+
+<!-- OWNER / PATIENT -->
+<div class="bar">🐾 OWNER & PATIENT</div>
+<div class="grid g4">
+<div><label>Patient name</label><input id="p-name"></div>
+<div><label>Patient ID / HN</label><input id="hn"></div>
+<div><label>Owner name</label><input id="owner"></div>
+<div><label>Weight (kg)</label><input type="number" id="weight" step="0.01" oninput="calcBlood()"></div>
+<div><label>Species</label><input id="species"></div>
+<div><label>Breed</label><input id="breed"></div>
+<div><label>Date of birth</label><input type="date" id="dob"></div>
+<div><label>Sex</label><select id="sex"><option value=""></option><option>M</option><option>MN</option><option>F</option><option>FS</option></select></div>
+<div><label>BCS (/9)</label><input type="number" id="bcs" min="1" max="9"></div>
+<div><label>Consent signed</label><select id="consent"><option value=""></option><option>Y</option><option>N</option></select></div>
+<div><label>Date</label><input type="date" id="rec-date"></div>
+</div>
+
+<!-- PROCEDURE -->
+<div class="bar">🔪 PROCEDURE</div>
+<div class="grid g4">
+<div><label>Procedure</label><input id="procedure"></div>
+<div><label>Extra procedure</label><input id="extra-proc"></div>
+<div><label>Vet in charge</label><input id="vet"></div>
+<div><label>Anaesthetist</label><input id="anaesthetist"></div>
+<div><label>Patient position</label><input id="position"></div>
+</div>
+
+<!-- CLINICAL -->
+<div class="bar">🩺 CLINICAL EXAM & STATUS</div>
+<div class="grid g4">
+<div><label>Temp (°F)</label><input type="number" id="ce-t" step="0.1"></div>
+<div><label>P /min</label><input type="number" id="ce-p"></div>
+<div><label>R /min</label><input type="number" id="ce-r"></div>
+<div><label>IV catheter location</label><input id="iv-loc"></div>
+<div><label>IV size (G)</label><input id="iv-size"></div>
+<div><label>Temperament</label><input id="temperament"></div>
+<div><label>Allergic reactions</label><input id="allergy"></div>
+</div>
+<div style="margin-top:8px"><label>ASA Status (เลือกเลข 1 ตัว + ติ๊ก E ได้ถ้าเป็น emergency)</label>
+<div class="asa" id="asa-row">
+<button onclick="setAsa(this,'I')">I</button><button onclick="setAsa(this,'II')">II</button>
+<button onclick="setAsa(this,'III')">III</button><button onclick="setAsa(this,'IV')">IV</button>
+<button onclick="setAsa(this,'V')">V</button>
+<button onclick="toggleE(this)" id="asa-e">E</button>
+</div></div>
+<div class="grid g2" style="margin-top:8px">
+<div><label>History / Presenting problem</label><textarea id="history"></textarea></div>
+<div><label>Current medications</label><textarea id="cur-meds"></textarea></div>
+<div><label>Diagnostic tests</label><textarea id="dx"></textarea></div>
+<div><label>Critical risks</label><textarea id="risks"></textarea></div>
+</div>
+
+<!-- EQUIPMENT -->
+<div class="bar no-print">✅ EQUIPMENT READY</div>
+<div class="chk no-print">
+<label><input type="checkbox" id="eq1">Daily machine check</label>
+<label><input type="checkbox" id="eq2">O₂ ready</label>
+<label><input type="checkbox" id="eq3">Leak test</label>
+<label><input type="checkbox" id="eq4">APL valve open</label>
+<label><input type="checkbox" id="eq5">Monitoring ready</label>
+<label><input type="checkbox" id="eq6">Warming ready</label>
+<label><input type="checkbox" id="eq7">Airway equipment ready</label>
+<label><input type="checkbox" id="eq8">Emergency equipment ready</label>
+</div>
+
+<!-- DRUGS -->
+<div class="bar">💉 PREMEDICATION DRUGS</div>
+<table class="dt"><thead><tr><th style="width:34%">Drug</th><th>Dose</th><th>Route</th><th>Time</th></tr></thead>
+<tbody id="premed-body"></tbody></table>
+<button class="btn btn-primary no-print" style="margin-top:6px;padding:6px 12px" onclick="addDrugRow('premed-body')">+ เพิ่มแถว</button>
+
+<div class="bar">💊 INDUCTION DRUGS</div>
+<table class="dt"><thead><tr><th style="width:34%">Drug</th><th>Dose</th><th>Route</th><th>Time</th></tr></thead>
+<tbody id="induction-body"></tbody></table>
+<button class="btn btn-primary no-print" style="margin-top:6px;padding:6px 12px" onclick="addDrugRow('induction-body')">+ เพิ่มแถว</button>
+
+<div class="grid g3" style="margin-top:10px">
+<div><label>Premed effect</label><select id="premed-effect"><option value=""></option><option>Profound</option><option>Good</option><option>Poor</option></select></div>
+<div><label>Endotracheal tube size</label><input id="et-size"></div>
+<div><label>Cuffed</label><select id="cuffed"><option value=""></option><option>Y</option><option>N</option></select></div>
+</div>
+
+<div class="bar">🧪 ANTIBIOTICS / NSAIDs</div>
+<table class="dt"><thead><tr><th style="width:18%">Type</th><th style="width:30%">Drug</th><th>Dose</th><th>Route</th><th>Time</th></tr></thead>
+<tbody id="abx-body">
+<tr><td><b>Antibiotic</b></td><td><input></td><td><input></td><td><select><option></option><option>IV</option><option>IM</option><option>SC</option><option>PO</option></select></td><td><input type="time"></td></tr>
+<tr><td><b>NSAID</b></td><td><input></td><td><input></td><td><select><option></option><option>IV</option><option>IM</option><option>SC</option><option>PO</option></select></td><td><input type="time"></td></tr>
+</tbody></table>
+<button class="btn btn-primary no-print" style="margin-top:6px;padding:6px 12px" onclick="addAbxRow()">+ เพิ่มแถว</button>
+
+<div class="bar">🎯 LOCAL BLOCK</div>
+<table class="dt"><thead><tr><th style="width:30%">Block / Technique</th><th style="width:25%">Drug</th><th>Dose</th><th>Volume</th><th>Time</th></tr></thead>
+<tbody id="block-body">
+<tr><td><input placeholder="เช่น Sciatic, Femoral, Epidural"></td><td><input></td><td><input></td><td><input></td><td><input type="time"></td></tr>
+</tbody></table>
+<button class="btn btn-primary no-print" style="margin-top:6px;padding:6px 12px" onclick="addBlockRow()">+ เพิ่มแถว</button>
+
+<!-- TIMER + BLOOD -->
+<div class="flex no-print" style="margin-top:14px">
+<div class="timer-box">
+<label>⏱️ Cefazolin Re-dose Timer (90 min)</label>
+<span id="cef-time" class="timer-badge">90:00</span>
+<button class="btn btn-primary" onclick="startCefazolin()">Start</button>
+</div>
+<div class="timer-box" style="background:#f0fdf4;font-size:11px;text-align:left">
+<label>🩸 Blood Volume Reference</label>
+<div id="blood-info">กรอกน้ำหนัก + เลือก species...</div>
+</div>
+</div>
+
+<!-- CRI SETUP -->
+<div class="bar">💧 CRI DRUGS (ตั้งค่ายา + ความเข้มข้น)</div>
+<table class="dt"><thead><tr><th style="width:40%">Drug</th><th>Concentration</th><th class="no-print" style="width:50px"></th></tr></thead>
+<tbody id="cri-setup-body"></tbody></table>
+<button class="btn btn-primary no-print" style="margin-top:6px;padding:6px 12px" onclick="addCriDrug()">+ เพิ่มยา CRI</button>
+<small class="hint" style="display:block;margin-top:4px">เช่น Fentanyl · 10 µg/ml | Ketamine · 1 mg/ml — กำหนดครั้งเดียว แล้วบันทึก rate (ml/hr) แต่ละช่วงเวลา</small>
+
+<!-- AI -->
+<div class="ai-container no-print">
+<h3 style="margin-top:0">📸 AI Monitoring</h3>
+<video id="webcam" autoplay playsinline muted style="display:none"></video>
+<img id="preview-img" style="display:none;width:100%;max-width:380px;border-radius:10px;margin-bottom:8px">
+<canvas id="snapshot" style="display:none"></canvas>
+
+<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:8px">
+<button id="btn-cam" class="btn btn-primary" onclick="toggleCamera()">📹 เปิดกล้อง</button>
+<button id="btn-shot" class="btn btn-warning" style="margin-top:0;display:none" onclick="takeSnapshot()">📷 ถ่ายภาพ</button>
+<label class="btn btn-primary" style="margin:0;cursor:pointer">🖼️ อัปโหลดรูป
+<input type="file" accept="image/*" style="display:none" onchange="loadUploadedImage(event)"></label>
+</div>
+
+<button id="btn-scan" class="btn btn-warning" style="display:none" onclick="captureAndAI()">🤖 ให้ AI อ่านค่าจากภาพ</button>
+<div id="cam-status" class="status-msg"></div>
+<div class="vitals-grid">
+<div><label>Time(min)</label><input type="number" id="v-time"></div>
+<div><label>HR</label><input type="number" id="v-hr"></div>
+<div><label>RR</label><input type="number" id="v-rr"></div>
+<div><label>SAP</label><input type="number" id="v-sap"></div>
+<div><label>MAP</label><input type="number" id="v-map"></div>
+<div><label>DAP</label><input type="number" id="v-dap"></div>
+<div><label>SpO2</label><input type="number" id="v-spo2"></div>
+<div><label>ETCO2</label><input type="number" id="v-etco2"></div>
+<div><label>Temp°F</label><input type="number" id="v-temp" step="0.1"></div>
+<div><label>Iso%</label><input type="number" id="v-iso" step="0.1"></div>
+<div><label>O₂/Air L/min</label><input type="text" id="v-o2"></div>
+<div><label>Fluid (ml/h)</label><input type="text" id="v-fluid"></div>
+</div>
+<div id="v-cri-grid" class="vitals-grid" style="margin-top:8px"></div>
+<small class="hint" style="color:#cbd5e1">เว้น Time ไว้ = ระบบเติม +10 นาที · ช่อง CRI = rate ml/hr ของยาแต่ละตัว</small>
+<button class="btn btn-success" onclick="addRecord()">✅ บันทึก + plot graph</button>
+</div>
+
+<!-- GRAPH -->
+<div class="bar">📈 VITAL SIGNS GRAPH</div>
+<div class="legend">
+<span style="color:#0d9488">● HR/PR</span><span style="color:#0891b2">○ RR</span><span style="color:#dc2626">∨—∧ BP (S/M/D)</span><span style="color:#2563eb">◇ SpO₂</span><span style="color:#7c3aed">▲ ETCO₂</span>
+</div>
+<div class="chart-wrap"><canvas id="chart" width="980" height="520"></canvas></div>
+
+<!-- DATA TABLE (AVA vertical style: parameters as rows, time as columns) -->
+<div class="bar">📊 DATA TABLE (AVA style)</div>
+<div style="overflow-x:auto">
+<table class="dt" id="data-table"><tbody id="data-body"></tbody></table>
+</div>
+
+<!-- EVENTS -->
+<div class="bar no-print">⏲️ SURGICAL EVENTS</div>
+<div class="events no-print">
+<div class="flex"><input type="text" value="Start Anesthesia" id="ev1l"><input type="time" id="ev1t"></div>
+<div class="flex"><input type="text" value="Start Surgery" id="ev2l"><input type="time" id="ev2t"></div>
+<div class="flex"><input type="text" value="End Surgery" id="ev3l"><input type="time" id="ev3t"></div>
+<div class="flex"><input type="text" value="Off Inhalation" id="ev4l"><input type="time" id="ev4t"></div>
+<div class="flex"><input type="text" value="Extubation" id="ev5l"><input type="time" id="ev5t"></div>
+</div>
+<div class="grid g2" style="margin-top:8px">
+<div><label>Total fluid given</label><input id="total-fluid"></div>
+<div><label>Fluid type/rate</label><input id="fluid-type"></div>
+</div>
+
+<!-- POSTOP -->
+<div class="bar">🛏️ POSTOPERATIVE</div>
+<div class="grid g4">
+<div><label>Temp (°F)</label><input type="number" id="po-t" step="0.1"></div>
+<div><label>P /min</label><input type="number" id="po-p"></div>
+<div><label>R /min</label><input type="number" id="po-r"></div>
+<div><label>Reversal agents</label><input id="reversal"></div>
+<div><label>Lab samples</label><input id="lab"></div>
+</div>
+<div style="margin-top:8px"><label>Notes</label><textarea id="notes" style="min-height:60px"></textarea></div>
+
+<button class="btn btn-primary no-print" style="width:100%;margin-top:18px;background:#475569" onclick="exportImage()">💾 บันทึกรูปภาพแบบฟอร์ม AVA (Save PNG)</button>
+</div>
+
+<!-- ===== AVA-STYLE EXPORT SHEET (hidden, rendered on export) ===== -->
+<div id="ava-sheet">
+  <div class="ava-title">ANAESTHESIA MONITORING SHEET <small>Adapt by NoN</small></div>
+
+  <table style="margin-top:6px">
+    <tr>
+      <td class="lbl" style="width:11%">Patient name</td><td class="val" id="a-pname"></td>
+      <td class="lbl" style="width:9%">Owner</td><td class="val" id="a-owner"></td>
+      <td class="lbl" style="width:9%">Vet in charge</td><td class="val" id="a-vet"></td>
+      <td class="lbl" style="width:9%">Anaesthetist</td><td class="val" id="a-anaes"></td>
+    </tr>
+    <tr>
+      <td class="lbl">Patient ID</td><td id="a-hn"></td>
+      <td class="lbl">Weight (kg)</td><td id="a-weight"></td>
+      <td class="lbl">Procedure</td><td colspan="3" id="a-proc"></td>
+    </tr>
+    <tr>
+      <td class="lbl">Species</td><td id="a-species"></td>
+      <td class="lbl">Breed</td><td id="a-breed"></td>
+      <td class="lbl">Extra proc.</td><td colspan="3" id="a-extra"></td>
+    </tr>
+    <tr>
+      <td class="lbl">Date of birth</td><td id="a-dob"></td>
+      <td class="lbl">Sex / BCS</td><td id="a-sexbcs"></td>
+      <td class="lbl">Position</td><td id="a-pos"></td>
+      <td class="lbl">Consent / Date</td><td colspan="1" id="a-consent"></td>
+    </tr>
+    <tr>
+      <td class="lbl">Clinical exam</td><td colspan="3" id="a-clinexam"></td>
+      <td class="lbl">ASA Status</td><td colspan="3" id="a-asa" style="font-weight:700"></td>
+    </tr>
+    <tr>
+      <td class="lbl">IV catheter</td><td colspan="3" id="a-iv"></td>
+      <td class="lbl">Allergic reactions</td><td colspan="3" id="a-allergy"></td>
+    </tr>
+    <tr>
+      <td class="lbl">History / Presenting problem</td><td colspan="3" id="a-history"></td>
+      <td class="lbl">Temperament</td><td colspan="3" id="a-temper"></td>
+    </tr>
+    <tr>
+      <td class="lbl">Current medications</td><td colspan="3" id="a-curmeds"></td>
+      <td class="lbl">Diagnostic tests</td><td colspan="3" id="a-dx"></td>
+    </tr>
+    <tr>
+      <td class="lbl">Critical risks</td><td colspan="7" id="a-risks"></td>
+    </tr>
+  </table>
+
+  <div class="sec">EQUIPMENT READY</div>
+  <table><tr id="a-equip"></tr></table>
+
+  <table style="margin-top:6px">
+    <tr>
+      <td class="hd" style="width:50%">PREMEDICATION DRUGS</td>
+      <td class="hd" style="width:50%">INDUCTION DRUGS</td>
+    </tr>
+    <tr>
+      <td style="padding:0"><table style="border:none" id="a-premed"></table></td>
+      <td style="padding:0"><table style="border:none" id="a-induction"></table></td>
+    </tr>
+  </table>
+
+  <table style="margin-top:4px">
+    <tr>
+      <td class="lbl" style="width:14%">Premed effect</td><td id="a-effect"></td>
+      <td class="lbl" style="width:14%">ET tube size</td><td id="a-et"></td>
+      <td class="lbl" style="width:10%">Cuffed</td><td id="a-cuffed"></td>
+    </tr>
+  </table>
+
+  <div class="sec">ANTIBIOTICS / NSAIDs</div>
+  <table id="a-abx"></table>
+
+  <div class="sec">LOCAL BLOCK</div>
+  <table id="a-block"></table>
+
+  <div class="sec">VITAL SIGNS — ● HR/PR · ○ RR · ∨—∧ BP · ◇ SpO₂ · ▲ ETCO₂</div>
+  <div class="ava-canvas-wrap"><canvas id="ava-chart" width="1072" height="640"></canvas></div>
+
+  <div class="sec">DATA TABLE</div>
+  <table id="a-data"></table>
+
+  <table style="margin-top:6px">
+    <tr>
+      <td class="hd" colspan="4" style="width:55%">SURGICAL EVENTS</td>
+      <td class="hd" colspan="4">POSTOPERATIVE</td>
+    </tr>
+    <tr>
+      <td colspan="4" style="padding:0"><table style="border:none" id="a-events"></table></td>
+      <td colspan="4" style="padding:0"><table style="border:none" id="a-postop"></table></td>
+    </tr>
+  </table>
+  <table style="margin-top:4px"><tr><td class="lbl" style="width:12%">Notes</td><td id="a-notes" style="height:50px"></td></tr></table>
+</div>
+
+<script>
+/* ---------- API KEY ---------- */
+document.getElementById('api-key').value=localStorage.getItem('gemini_key')||'';
+function saveKey(){localStorage.setItem('gemini_key',document.getElementById('api-key').value.trim());}
+
+/* ---------- CAMERA (on-demand) ---------- */
+let camStream=null;
+let capturedB64=null; // base64 of image ready for AI
+const video=document.getElementById('webcam');
+const previewImg=document.getElementById('preview-img');
+const camStatus=document.getElementById('cam-status');
+
+function toggleCamera(){
+  if(camStream){stopCamera();return;}
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    camStatus.innerText="⚠️ เบราว์เซอร์ไม่รองรับกล้อง / ไม่ได้เปิดผ่าน https";return;}
+  camStatus.innerText="⏳ กำลังเปิดกล้อง...";
+  navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}})
+  .then(s=>{
+    camStream=s;video.srcObject=s;
+    video.style.display='block';previewImg.style.display='none';
+    document.getElementById('btn-cam').innerText='⏹️ ปิดกล้อง';
+    document.getElementById('btn-shot').style.display='inline-block';
+    camStatus.innerText="";
+  })
+  .catch(err=>{
+    if(err.name==="NotAllowedError")camStatus.innerText="⚠️ ไม่ได้อนุญาตกล้อง — กดอนุญาตในเบราว์เซอร์";
+    else if(location.protocol==="file:")camStatus.innerText="⚠️ ต้องเปิดผ่าน https (host ก่อน)";
+    else camStatus.innerText="⚠️ เปิดกล้องไม่สำเร็จ: "+err.message;});
+}
+function stopCamera(){
+  if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
+  video.style.display='none';
+  document.getElementById('btn-cam').innerText='📹 เปิดกล้อง';
+  document.getElementById('btn-shot').style.display='none';
+}
+function takeSnapshot(){
+  if(!camStream){camStatus.innerText="⚠️ กล้องยังไม่เปิด";return;}
+  const canvas=document.getElementById('snapshot');
+  canvas.width=video.videoWidth;canvas.height=video.videoHeight;
+  canvas.getContext('2d').drawImage(video,0,0);
+  capturedB64=canvas.toDataURL('image/jpeg').split(',')[1];
+  previewImg.src='data:image/jpeg;base64,'+capturedB64;
+  previewImg.style.display='block';
+  stopCamera();
+  document.getElementById('btn-scan').style.display='inline-block';
+  camStatus.innerText="✅ ถ่ายภาพแล้ว — กดให้ AI อ่านค่า หรือถ่ายใหม่";
+}
+function loadUploadedImage(ev){
+  const file=ev.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    capturedB64=e.target.result.split(',')[1];
+    previewImg.src=e.target.result;previewImg.style.display='block';
+    video.style.display='none';stopCamera();
+    document.getElementById('btn-scan').style.display='inline-block';
+    camStatus.innerText="✅ โหลดรูปแล้ว — กดให้ AI อ่านค่า";
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ---------- ASA ---------- */
+let asaNum='',asaE=false;
+function setAsa(btn,v){document.querySelectorAll('#asa-row button:not(#asa-e)').forEach(b=>b.classList.remove('on'));btn.classList.add('on');asaNum=v;}
+function toggleE(btn){asaE=!asaE;btn.classList.toggle('on',asaE);}
+
+/* ---------- BLOOD ---------- */
+function calcBlood(){
+  const w=parseFloat(document.getElementById('weight').value)||0;
+  const sp=(document.getElementById('species').value||'').toLowerCase();
+  const factor=sp.includes('cat')||sp.includes('แมว')?60:90;
+  const tbv=w*factor;
+  document.getElementById('blood-info').innerHTML=
+    `Factor: ${factor} ml/kg<br>TBV: <b>${tbv.toFixed(0)} ml</b><br>ACB 10%: ${(tbv*0.1).toFixed(1)} ml<br>20%: ${(tbv*0.2).toFixed(1)} · 30%: ${(tbv*0.3).toFixed(1)} ml`;
+}
+document.getElementById('species').addEventListener('input',calcBlood);
+
+/* ---------- TIMER (cefazolin only) ---------- */
+let cefInterval=null;
+function cefazolinPresent(){
+  // scan antibiotic/NSAID table drug-name inputs for "cefazolin"
+  const inputs=document.querySelectorAll('#abx-body tr td:nth-child(2) input');
+  for(const inp of inputs){
+    if((inp.value||'').toLowerCase().includes('cefazolin'))return true;
+  }
+  return false;
+}
+function startCefazolin(){
+  if(!cefazolinPresent()){
+    document.getElementById('cef-time').innerText='90:00';
+    alert('Timer นี้ใช้สำหรับ Cefazolin เท่านั้น\nกรุณากรอกชื่อยา "Cefazolin" ในตาราง Antibiotics ก่อนเริ่มจับเวลา');
+    return;
+  }
+  if(cefInterval)clearInterval(cefInterval);
+  let time=90*60;
+  document.getElementById('alert-cefazolin').style.display='none';
+  const tick=()=>{let m=Math.floor(time/60),s=time%60;
+    document.getElementById('cef-time').innerText=`${m}:${s<10?'0'+s:s}`;
+    if(time<=0){clearInterval(cefInterval);document.getElementById('alert-cefazolin').style.display='block';return;}
+    time--;};
+  tick();cefInterval=setInterval(tick,1000);
+}
+function resetCefazolin(){if(cefInterval)clearInterval(cefInterval);startCefazolin();}
+
+/* ---------- DRUG ROWS ---------- */
+function addDrugRow(bodyId){
+  const tb=document.getElementById(bodyId);
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><input></td><td><input></td>
+    <td><select><option></option><option>IV</option><option>IM</option><option>SC</option><option>PO</option><option>Epidural</option></select></td>
+    <td><input type="time"></td>`;
+  tb.appendChild(tr);
+}
+addDrugRow('premed-body');addDrugRow('premed-body');
+addDrugRow('induction-body');
+
+function addAbxRow(){
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><input placeholder="Other"></td><td><input></td><td><input></td>
+    <td><select><option></option><option>IV</option><option>IM</option><option>SC</option><option>PO</option></select></td>
+    <td><input type="time"></td>`;
+  document.getElementById('abx-body').appendChild(tr);
+}
+function addBlockRow(){
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><input></td><td><input></td><td><input></td><td><input></td><td><input type="time"></td>`;
+  document.getElementById('block-body').appendChild(tr);
+}
+
+/* ---------- DATA + GRAPH ---------- */
+let records=[]; // {t,hr,...,o2,fluid, criRates:{drugId:rate}}
+let nextAutoTime=0;
+
+/* ---------- CRI DRUGS ---------- */
+let criDrugs=[]; // {id,name,conc}
+let criSeq=0;
+function addCriDrug(name='',conc=''){
+  const id='cri'+(++criSeq);
+  criDrugs.push({id,name,conc});
+  renderCriSetup();renderCriInputs();renderTable();
+}
+function removeCriDrug(id){
+  criDrugs=criDrugs.filter(d=>d.id!==id);
+  records.forEach(r=>{if(r.criRates)delete r.criRates[id];});
+  renderCriSetup();renderCriInputs();renderTable();
+}
+function renderCriSetup(){
+  const tb=document.getElementById('cri-setup-body');tb.innerHTML='';
+  criDrugs.forEach(d=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><input value="${d.name.replace(/"/g,'&quot;')}" oninput="updateCri('${d.id}','name',this.value)" placeholder="เช่น Fentanyl"></td>
+      <td><input value="${d.conc.replace(/"/g,'&quot;')}" oninput="updateCri('${d.id}','conc',this.value)" placeholder="เช่น 10 µg/ml"></td>
+      <td class="no-print" style="text-align:center"><button class="btn" style="background:#ef4444;color:#fff;padding:3px 8px;font-size:11px" onclick="removeCriDrug('${d.id}')">ลบ</button></td>`;
+    tb.appendChild(tr);
+  });
+}
+function updateCri(id,field,val){
+  const d=criDrugs.find(x=>x.id===id);if(d){d[field]=val;renderCriInputs();renderTable();}
+}
+function renderCriInputs(){
+  const g=document.getElementById('v-cri-grid');g.innerHTML='';
+  criDrugs.forEach(d=>{
+    const div=document.createElement('div');
+    div.innerHTML=`<label>${d.name||'CRI'} (ml/hr)</label><input type="number" step="0.1" id="vcri-${d.id}">`;
+    g.appendChild(div);
+  });
+}
+
+function num(id){const el=document.getElementById(id);if(!el)return null;const v=el.value;return v===''?null:parseFloat(v);}
+function txt(id){const el=document.getElementById(id);if(!el)return null;const v=el.value.trim();return v===''?null:v;}
+
+function addRecord(){
+  let t=num('v-time');
+  if(t===null){t=nextAutoTime;}
+  const criRates={};
+  criDrugs.forEach(d=>{const v=num('vcri-'+d.id);if(v!==null)criRates[d.id]=v;});
+  const r={t:t,
+    hr:num('v-hr'),rr:num('v-rr'),sap:num('v-sap'),map:num('v-map'),dap:num('v-dap'),
+    spo2:num('v-spo2'),etco2:num('v-etco2'),temp:num('v-temp'),iso:num('v-iso'),
+    o2:txt('v-o2'),fluid:txt('v-fluid'),criRates:criRates};
+  records.push(r);
+  records.sort((a,b)=>a.t-b.t);
+  nextAutoTime=Math.max(...records.map(x=>x.t))+10;
+  renderTable();drawChart();
+  ['v-hr','v-rr','v-sap','v-map','v-dap','v-spo2','v-etco2','v-temp','v-iso','v-time','v-o2','v-fluid'].forEach(id=>document.getElementById(id).value='');
+  criDrugs.forEach(d=>{const el=document.getElementById('vcri-'+d.id);if(el)el.value='';});
+  camStatus.innerText="✅ บันทึกแล้ว (t="+t+"m)";
+}
+
+// AVA-style fixed parameter rows
+const PARAM_ROWS=[
+  ['Time','t','m'],['Iso %','iso',''],['O₂/Air L/min','o2',''],
+  ['HR (bpm)','hr',''],['RR (rpm)','rr',''],
+  ['SAP','sap',''],['MAP','map',''],['DAP','dap',''],
+  ['SpO₂ %','spo2',''],['ETCO₂','etco2',''],['Temp °F','temp',''],
+  ['Fluid (ml/h)','fluid','']
+];
+function buildRows(){
+  // returns array of [label, cellValueFn]
+  const c=v=>(v===null||v===undefined)?'-':v;
+  const rows=PARAM_ROWS.map(([label,key,suf])=>[label,(r)=>key==='t'?(r.t+suf):c(r[key])]);
+  // append one row per CRI drug, with concentration in label
+  criDrugs.forEach(d=>{
+    const lbl=(d.name||'CRI')+(d.conc?` (${d.conc}) ml/hr`:' ml/hr');
+    rows.push([lbl,(r)=>{const v=r.criRates&&r.criRates[d.id];return (v===undefined||v===null)?'-':v;}]);
+  });
+  return rows;
+}
+function renderTable(){
+  const tb=document.getElementById('data-body');tb.innerHTML='';
+  buildRows().forEach(([label,fn])=>{
+    const tr=document.createElement('tr');
+    let cells=`<td style="background:#1e3a8a;color:#fff;font-weight:700;text-align:left;white-space:nowrap">${label}</td>`;
+    records.forEach(r=>{cells+=`<td>${fn(r)}</td>`;});
+    tr.innerHTML=cells;
+    tb.appendChild(tr);
+  });
+}
+
+function drawChart(){
+  const cv=document.getElementById('chart');const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const padL=42,padR=14,padT=14,padB=30;
+  const plotW=W-padL-padR,plotH=H-padT-padB;
+  const yMin=0,yMax=260;
+  const maxT=records.length?Math.max(60,Math.ceil(Math.max(...records.map(r=>r.t))/10)*10):60;
+  const xMin=0,xMax=maxT;
+  const X=t=>padL+(t-xMin)/(xMax-xMin)*plotW;
+  const Y=v=>padT+(yMax-v)/(yMax-yMin)*plotH;
+  // grid Y
+  ctx.strokeStyle='#e2e8f0';ctx.fillStyle='#64748b';ctx.font='10px Inter';ctx.lineWidth=1;
+  for(let v=0;v<=260;v+=20){ctx.beginPath();ctx.moveTo(padL,Y(v));ctx.lineTo(W-padR,Y(v));ctx.stroke();
+    ctx.textAlign='right';ctx.fillText(v,padL-4,Y(v)+3);}
+  // grid X every 10
+  for(let t=0;t<=xMax;t+=10){ctx.strokeStyle=t%60===0?'#94a3b8':'#eef2f7';ctx.beginPath();ctx.moveTo(X(t),padT);ctx.lineTo(X(t),H-padB);ctx.stroke();
+    ctx.fillStyle='#475569';ctx.textAlign='center';ctx.fillText(t,X(t),H-padB+14);}
+  ctx.fillStyle='#475569';ctx.textAlign='center';ctx.fillText('Time (min)',W/2,H-4);
+  if(!records.length){ctx.fillStyle='#94a3b8';ctx.font='14px Inter';ctx.fillText('ยังไม่มีข้อมูล — กดบันทึกเพื่อ plot',W/2,H/2);return;}
+
+  // markers only — no connecting lines
+  // colors: HR=teal, BP(SAP/MAP/DAP)=dark red, RR=cyan, SpO2=blue, ETCO2=purple
+  const BP='#dc2626';
+  records.forEach(r=>{
+    const mk=(v,fn,col)=>{if(v===null||v===undefined)return;fn(X(r.t),Y(v),col);};
+    mk(r.hr,dotFilled,'#0d9488');     // ● HR (teal)
+    mk(r.rr,circleOpen,'#0891b2');    // ○ RR
+    mk(r.sap,markV,BP);               // ∨ SAP
+    mk(r.map,markDash,BP);            // — MAP
+    mk(r.dap,markCaret,BP);           // ∧ DAP
+    mk(r.spo2,markDiamond,'#2563eb'); // ◇ SpO2 (blue)
+    mk(r.etco2,triFilled,'#7c3aed');  // ▲ ETCO2
+  });
+  function dotFilled(x,y,c){ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,3.2,0,7);ctx.fill();}
+  function circleOpen(x,y,c){ctx.strokeStyle=c;ctx.lineWidth=1.6;ctx.beginPath();ctx.arc(x,y,3.4,0,7);ctx.stroke();}
+  function markV(x,y,c){ctx.strokeStyle=c;ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(x-4,y-4);ctx.lineTo(x,y+2);ctx.lineTo(x+4,y-4);ctx.stroke();}
+  function markCaret(x,y,c){ctx.strokeStyle=c;ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(x-4,y+4);ctx.lineTo(x,y-2);ctx.lineTo(x+4,y+4);ctx.stroke();}
+  function markDash(x,y,c){ctx.strokeStyle=c;ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(x-4,y);ctx.lineTo(x+4,y);ctx.stroke();}
+  function markDiamond(x,y,c){ctx.strokeStyle=c;ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(x,y-4);ctx.lineTo(x+4,y);ctx.lineTo(x,y+4);ctx.lineTo(x-4,y);ctx.closePath();ctx.stroke();}
+  function triFilled(x,y,c){ctx.fillStyle=c;ctx.beginPath();ctx.moveTo(x,y-4);ctx.lineTo(x-4,y+3);ctx.lineTo(x+4,y+3);ctx.closePath();ctx.fill();}
+}
+drawChart();
+addCriDrug('Fentanyl','10 µg/ml'); // เริ่มต้น 1 ยา แก้ไข/ลบได้
+
+/* ---------- AI SCAN ---------- */
+async function captureAndAI(){
+  const apiKey=(localStorage.getItem('gemini_key')||'').trim();
+  if(!apiKey){camStatus.innerText="⚠️ ยังไม่กรอก API Key";return;}
+  if(!capturedB64){camStatus.innerText="⚠️ ยังไม่มีภาพ — ถ่ายหรืออัปโหลดรูปก่อน";return;}
+  const btn=document.getElementById('btn-scan');btn.disabled=true;btn.innerText="⏳ AI กำลังอ่าน...";
+  const prompt=`Analyze this anesthesia monitor screen. Return ONLY JSON, no markdown: {"hr":num,"rr":num,"sys":num,"dia":num,"map":num,"spo2":num,"etco2":num,"temp":num,"iso":num}. Use null for any value you cannot read.`;
+  try{
+    const resp=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts:[{text:prompt},{inline_data:{mime_type:"image/jpeg",data:capturedB64}}]}]})});
+    if(!resp.ok){
+      let msg="HTTP "+resp.status;
+      if(resp.status===429)msg="โควต้า API หมด (429) — รอ reset (รายวัน 1,500 ครั้ง) หรือเปิด billing";
+      else if(resp.status===404)msg="ไม่พบโมเดล (404) — โมเดลอาจถูกปลดระวาง ต้องอัปเดตชื่อโมเดล";
+      else if(resp.status===400)msg="คำขอผิดพลาด (400) — เช็ค API Key หรือรูปภาพ";
+      else if(resp.status===403)msg="API Key ไม่ถูกต้องหรือไม่มีสิทธิ์ (403)";
+      else msg+=": "+(await resp.text()).slice(0,100);
+      throw new Error(msg);
+    }
+    const result=await resp.json();
+    const text=result?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if(!text)throw new Error("AI ไม่ส่งข้อความกลับ");
+    const d=JSON.parse(text.replace(/```json|```/g,'').trim());
+    const set=(id,v)=>{if(v!==null&&v!==undefined)document.getElementById(id).value=v;};
+    set('v-hr',d.hr);set('v-rr',d.rr);set('v-sap',d.sys);set('v-dap',d.dia);set('v-map',d.map);
+    set('v-spo2',d.spo2);set('v-etco2',d.etco2);set('v-temp',d.temp);set('v-iso',d.iso);
+    camStatus.innerText="✅ อ่านค่าเรียบร้อย — ตรวจสอบก่อนบันทึก";
+  }catch(e){camStatus.innerText="⚠️ "+e.message;}
+  finally{btn.disabled=false;btn.innerText="🤖 ให้ AI อ่านค่าจากภาพ";}
+}
+
+/* ---------- AVA EXPORT ---------- */
+function gv(id){return (document.getElementById(id)?.value||'').trim();}
+function setT(id,v){document.getElementById(id).innerHTML=v||'&nbsp;';}
+
+function collectTable(bodyId,cols){
+  // returns array of row arrays from a drug-style tbody
+  const rows=[];
+  document.querySelectorAll('#'+bodyId+' tr').forEach(tr=>{
+    const fields=tr.querySelectorAll('input,select');
+    const vals=[...fields].map(f=>f.value.trim());
+    if(vals.some(v=>v))rows.push(vals);
+  });
+  return rows;
+}
+
+function populateAva(){
+  setT('a-pname',gv('p-name'));setT('a-owner',gv('owner'));setT('a-vet',gv('vet'));setT('a-anaes',gv('anaesthetist'));
+  setT('a-hn',gv('hn'));setT('a-weight',gv('weight'));setT('a-proc',gv('procedure'));
+  setT('a-species',gv('species'));setT('a-breed',gv('breed'));setT('a-extra',gv('extra-proc'));
+  setT('a-dob',gv('dob'));
+  const sex=gv('sex'),bcs=gv('bcs');setT('a-sexbcs',(sex||'-')+' / '+(bcs?bcs+'/9':'-'));
+  setT('a-pos',gv('position'));
+  setT('a-consent',(gv('consent')||'-')+' '+(gv('rec-date')||''));
+  setT('a-clinexam',`T ${gv('ce-t')||'-'}°F · P ${gv('ce-p')||'-'} · R ${gv('ce-r')||'-'}`);
+  setT('a-asa',(asaNum||'-')+(asaE?' E':''));
+  setT('a-iv',`${gv('iv-loc')||'-'} · ${gv('iv-size')||'-'}G`);
+  setT('a-allergy',gv('allergy'));setT('a-temper',gv('temperament'));
+  setT('a-history',gv('history'));setT('a-curmeds',gv('cur-meds'));setT('a-dx',gv('dx'));setT('a-risks',gv('risks'));
+
+  // equipment
+  const eqLabels={eq1:'Machine check',eq2:'O₂ ready',eq3:'Leak test',eq4:'APL open',eq5:'Monitoring',eq6:'Warming',eq7:'Airway',eq8:'Emergency'};
+  let eqHtml='';
+  Object.keys(eqLabels).forEach(k=>{
+    const on=document.getElementById(k).checked;
+    eqHtml+=`<td style="text-align:center">${eqLabels[k]}<br><b>${on?'✓ Y':'☐'}</b></td>`;
+  });
+  document.getElementById('a-equip').innerHTML=eqHtml;
+
+  // drug tables
+  const drugHead='<tr><td class="lbl" style="width:40%">Drug</td><td class="lbl">Dose</td><td class="lbl">Route</td><td class="lbl">Time</td></tr>';
+  function drugTbl(srcId,destId){
+    let h=drugHead;
+    const rows=collectTable(srcId);
+    if(rows.length){rows.forEach(r=>{h+=`<tr><td>${r[0]||'&nbsp;'}</td><td>${r[1]||''}</td><td>${r[2]||''}</td><td>${r[3]||''}</td></tr>`;});}
+    else h+='<tr><td>&nbsp;</td><td></td><td></td><td></td></tr>';
+    document.getElementById(destId).innerHTML=h;
+  }
+  drugTbl('premed-body','a-premed');
+  drugTbl('induction-body','a-induction');
+
+  setT('a-effect',gv('premed-effect'));setT('a-et',gv('et-size'));setT('a-cuffed',gv('cuffed'));
+
+  // abx table
+  let abxH='<tr><td class="lbl" style="width:16%">Type</td><td class="lbl" style="width:28%">Drug</td><td class="lbl">Dose</td><td class="lbl">Route</td><td class="lbl">Time</td></tr>';
+  document.querySelectorAll('#abx-body tr').forEach(tr=>{
+    const ins=tr.querySelectorAll('input,select');
+    let type='',drug,dose,route,time;
+    if(tr.querySelector('td b')){type=tr.querySelector('td b').innerText;drug=ins[0].value;dose=ins[1].value;route=ins[2].value;time=ins[3].value;}
+    else{type=ins[0].value;drug=ins[1].value;dose=ins[2].value;route=ins[3].value;time=ins[4].value;}
+    if(drug||dose)abxH+=`<tr><td>${type||''}</td><td>${drug||''}</td><td>${dose||''}</td><td>${route||''}</td><td>${time||''}</td></tr>`;
+  });
+  document.getElementById('a-abx').innerHTML=abxH;
+
+  // block table
+  let blkH='<tr><td class="lbl" style="width:30%">Block / Technique</td><td class="lbl" style="width:25%">Drug</td><td class="lbl">Dose</td><td class="lbl">Volume</td><td class="lbl">Time</td></tr>';
+  let blkAny=false;
+  document.querySelectorAll('#block-body tr').forEach(tr=>{
+    const ins=tr.querySelectorAll('input');
+    const v=[...ins].map(i=>i.value.trim());
+    if(v.some(x=>x)){blkAny=true;blkH+=`<tr><td>${v[0]||''}</td><td>${v[1]||''}</td><td>${v[2]||''}</td><td>${v[3]||''}</td><td>${v[4]||''}</td></tr>`;}
+  });
+  if(!blkAny)blkH+='<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td></tr>';
+  document.getElementById('a-block').innerHTML=blkH;
+
+  // data table (AVA vertical: parameters as rows, time as columns)
+  let dH='';
+  if(!records.length){dH='<tr><td style="text-align:center;color:#888">ไม่มีข้อมูล</td></tr>';}
+  else{
+    buildRows().forEach(([label,fn])=>{
+      let row=`<td class="lbl" style="text-align:left;white-space:nowrap">${label}</td>`;
+      records.forEach(r=>{row+=`<td>${fn(r)}</td>`;});
+      dH+=`<tr>${row}</tr>`;
+    });
+  }
+  document.getElementById('a-data').innerHTML=dH;
+
+  // events
+  let evH='';
+  for(let i=1;i<=5;i++){const l=gv('ev'+i+'l'),t=gv('ev'+i+'t');evH+=`<tr><td class="lbl" style="width:45%">${l||''}</td><td>${t||'&nbsp;'}</td></tr>`;}
+  evH+=`<tr><td class="lbl">Total fluid</td><td>${gv('total-fluid')||'&nbsp;'}</td></tr>`;
+  evH+=`<tr><td class="lbl">Fluid type/rate</td><td>${gv('fluid-type')||'&nbsp;'}</td></tr>`;
+  document.getElementById('a-events').innerHTML=evH;
+
+  // postop
+  let poH=`<tr><td class="lbl" style="width:45%">T / P / R</td><td>${gv('po-t')||'-'}°F / ${gv('po-p')||'-'} / ${gv('po-r')||'-'}</td></tr>`;
+  poH+=`<tr><td class="lbl">Reversal agents</td><td>${gv('reversal')||'&nbsp;'}</td></tr>`;
+  poH+=`<tr><td class="lbl">Lab samples</td><td>${gv('lab')||'&nbsp;'}</td></tr>`;
+  document.getElementById('a-postop').innerHTML=poH;
+
+  setT('a-notes',gv('notes').replace(/\n/g,'<br>'));
+}
+
+function drawAvaChart(){
+  const cv=document.getElementById('ava-chart');const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
+  const blocks=4, perBlock=60; // 4 blocks x 60 min = 240 min (1 ชม./บล็อก)
+  const padL=34,padR=8,padT=10,padB=22;
+  const plotW=W-padL-padR,plotH=H-padT-padB;
+  const blockW=plotW/blocks;
+  const yMin=0,yMax=260;
+  const Y=v=>padT+(yMax-v)/(yMax-yMin)*plotH;
+  // X for absolute minute (0..200)
+  const X=t=>{const b=Math.floor(t/perBlock);const within=t-b*perBlock;return padL+b*blockW+(within/perBlock)*blockW;};
+
+  // Y gridlines + labels
+  ctx.strokeStyle='#cbd5e1';ctx.lineWidth=.5;ctx.fillStyle='#334155';ctx.font='9px Inter';ctx.textAlign='right';
+  for(let v=0;v<=260;v+=20){ctx.beginPath();ctx.moveTo(padL,Y(v));ctx.lineTo(W-padR,Y(v));ctx.stroke();ctx.fillText(v,padL-3,Y(v)+3);}
+  // vertical block boundaries (bold) + 10-min minor lines + per-block 10..50 labels
+  ctx.textAlign='center';
+  for(let b=0;b<blocks;b++){
+    for(let m=0;m<=perBlock;m+=10){
+      const absT=b*perBlock+m;const x=X(absT);
+      ctx.strokeStyle=(m===0)?'#1e3a8a':'#e2e8f0';ctx.lineWidth=(m===0)?1.2:.5;
+      ctx.beginPath();ctx.moveTo(x,padT);ctx.lineTo(x,H-padB);ctx.stroke();
+      if(m>0){ctx.fillStyle='#475569';ctx.fillText(m,x,H-padB+12);}
+    }
+  }
+  // right border
+  ctx.strokeStyle='#1e3a8a';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(W-padR,padT);ctx.lineTo(W-padR,H-padB);ctx.stroke();
+
+  if(!records.length){ctx.fillStyle='#94a3b8';ctx.font='13px Inter';ctx.textAlign='center';ctx.fillText('ไม่มีข้อมูลกราฟ',W/2,H/2);return;}
+
+  // markers only — no connecting lines
+  const BP='#dc2626';
+  records.forEach(r=>{
+    if(r.t>blocks*perBlock)return;
+    const mk=(v,fn,col)=>{if(v===null||v===undefined)return;fn(X(r.t),Y(v),col);};
+    mk(r.hr,(x,y,c)=>{ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,3,0,7);ctx.fill();},'#0d9488'); // HR teal
+    mk(r.rr,(x,y,c)=>{ctx.strokeStyle=c;ctx.lineWidth=1.4;ctx.beginPath();ctx.arc(x,y,3.2,0,7);ctx.stroke();},'#0891b2');
+    mk(r.sap,(x,y,c)=>{ctx.strokeStyle=c;ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(x-4,y-4);ctx.lineTo(x,y+2);ctx.lineTo(x+4,y-4);ctx.stroke();},BP);
+    mk(r.map,(x,y,c)=>{ctx.strokeStyle=c;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-4,y);ctx.lineTo(x+4,y);ctx.stroke();},BP);
+    mk(r.dap,(x,y,c)=>{ctx.strokeStyle=c;ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(x-4,y+4);ctx.lineTo(x,y-2);ctx.lineTo(x+4,y+4);ctx.stroke();},BP);
+    mk(r.spo2,(x,y,c)=>{ctx.strokeStyle=c;ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(x,y-4);ctx.lineTo(x+4,y);ctx.lineTo(x,y+4);ctx.lineTo(x-4,y);ctx.closePath();ctx.stroke();},'#2563eb'); // SpO2 diamond
+    mk(r.etco2,(x,y,c)=>{ctx.fillStyle=c;ctx.beginPath();ctx.moveTo(x,y-4);ctx.lineTo(x-4,y+3);ctx.lineTo(x+4,y+3);ctx.closePath();ctx.fill();},'#7c3aed');
+  });
+}
+
+function exportImage(){
+  populateAva();
+  drawAvaChart();
+  const sheet=document.getElementById('ava-sheet');
+  sheet.classList.add('show');
+  html2canvas(sheet,{scale:2,backgroundColor:'#ffffff'}).then(c=>{
+    const link=document.createElement('a');
+    link.download=`Anesthesia_${gv('hn')||'case'}.png`;
+    link.href=c.toDataURL();link.click();
+  }).finally(()=>{sheet.classList.remove('show');});
+}
+</script>
+</body>
+</html>
